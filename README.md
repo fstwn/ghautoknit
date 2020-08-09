@@ -30,7 +30,7 @@ A prototypical bridge between Rhino / Grasshopper and [Autoknit](https://github.
 
 - You need to set the ``_AK_RAW_PATH_`` variable in ``ghautoknit/Environment.py`` to the folder where your ``interface.exe`` is located.
 
-### 4. Install Cockatoo UserObjects
+### 4. Install GHAutoknit UserObjects
 
 - Navigate to the Grasshopper UserObjects folder
   - On **Windows**:
