@@ -26,7 +26,7 @@ A prototypical bridge between Rhino / Grasshopper and [Autoknit](https://github.
   `~/Library/Application Support/McNeel/Rhinoceros/6.0/scripts`
 - Move all the Content from inside the `modules` directory to this scripts folder.
 
-### 3. Set _AK_RAW_PATH_ variable
+### 3. Set ``_AK_RAW_PATH_`` variable
 
 - You need to set the ``_AK_RAW_PATH_`` variable in ``ghautoknit/Environment.py`` to the folder where your ``interface.exe`` is located.
 
