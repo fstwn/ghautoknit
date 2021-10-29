@@ -14,6 +14,11 @@ __all__ = [
 # PATH TO COMPILED AUTOKNIT FOLDER (WHERE INTERFACE.EXE IS LOCATED!)
 _AK_RAW_PATH_ = r"C:\path\to\autoknit\dist"
 
+# IF THERE IS NO VALID PATH PROVIDED, FALL BACK TO THE PRECOMPILED BINARY
+if not path.exists(_AK_RAW_PATH_):
+    _AK_RAW_PATH_ = path.normpath(path.dirname(path.realpath(__file__)) +
+                                  r"\autoknit-windows-v0.1")
+
 # MORE ENVIRONMENT VARIABLES (DON'T CHANGE THIS!) -----------------------------
 _AK_PATH_ = path.normpath(_AK_RAW_PATH_)
 _AK_INTERFACE_ = path.normpath(_AK_RAW_PATH_ + r"\interface")
