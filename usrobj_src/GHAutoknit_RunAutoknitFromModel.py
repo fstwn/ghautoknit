@@ -8,13 +8,13 @@ TODO: update docstring
         stitch_width: {item, float}
         stitch_height: {item, float}
         save_traced: Path where the traced file (*.st) should be saved when peeling is finished {item, str}
-        peel_step: {item, int}
+        peel_step: Number of steps to peel the model. -1 will peel the whole model {item, int}
     Outputs:
         R: Boolean identifying if this autoknit instance is currently running or not {item, boolean}
     Remarks:
         Author: Max Eschenbach
-        License: Apache License 2.0
-        Version: 200601
+        License: MIT License
+        Version: 211029
 """
 
 # PYTHON STANDARD LIBRARY IMPORTS
@@ -84,6 +84,16 @@ class RunAutoknitFromModel(component):
                                             stitch_height,
                                             save_traced,
                                             peel_step)
+        
+        # throw runtime message and abort if path is not set correctly!
+        if not Command:
+            rml = self.RuntimeMessageLevel.Warning
+            self.AddRuntimeMessage(rml, "_AK_RAW_PATH_ is not set correctly! " +
+                                        "Please open Environment.py and set " +
+                                        "the path to your autoknit " +
+                                        "installation.\nCurrent path is:\n" +
+                                        ghak.Environment._AK_PATH_)
+            return False
         
         # START AUTOKNIT THREAD ------------------------------------------------
         

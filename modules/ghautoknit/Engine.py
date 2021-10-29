@@ -1,23 +1,24 @@
-# PYTHON STANDARD LIBRARY IMPORTS ----------------------------------------------
+# PYTHON STANDARD LIBRARY IMPORTS ---------------------------------------------
 from __future__ import absolute_import
 from __future__ import division
 import datetime
 from os import path
 
-# RHINO IMPORTS ----------------------------------------------------------------
+# RHINO IMPORTS ---------------------------------------------------------------
 from scriptcontext import sticky as st
 
-# LOCAL MODULE IMPORTS ---------------------------------------------------------
+# LOCAL MODULE IMPORTS --------------------------------------------------------
 from ghautoknit.Environment import _AK_PATH_, _AK_INTERFACE_
 from ghautoknit.FileIO import SaveObj, SaveConstraints
 
-# ALL LIST ---------------------------------------------------------------------
+# ALL LIST --------------------------------------------------------------------
 __all__ = [
     "InitializeComponentInterface",
     "TempFilePaths",
     "CompileCommand",
     "WriteTempFiles"
 ]
+
 
 def InitializeComponentInterface(component):
     """
@@ -34,6 +35,7 @@ def InitializeComponentInterface(component):
         st[reset_key] = False
 
     return (running_key, reset_key)
+
 
 def TempFilePaths(filedir):
     """
@@ -56,71 +58,84 @@ def TempFilePaths(filedir):
 
     return (temp_modelfile, temp_consfile)
 
-def CompileCommand(obj, constraints, obj_scale = None, stitch_width = None, stitch_height = None, save_traced = None, peel_step = None):
+
+def CompileCommand(obj,
+                   constraints,
+                   obj_scale=None,
+                   stitch_width=None,
+                   stitch_height=None,
+                   save_traced=None,
+                   peel_step=None):
     """
     Compiles a command with arguments for running autoknit.
     """
 
     if not obj or not constraints:
-        raise ValueError("Expected *.obj and *.cons file," + \
-                         "received {} and {}." + \
+        raise ValueError("Expected *.obj and *.cons file," +
+                         "received {} and {}." +
                          "Check your inputs!".format(obj, constraints))
     # make basic command arguments
     cmdargs = ["obj:" + obj, "constraints:" + constraints]
 
-    # handle obj-scale parameter -----------------------------------------------
+    # handle obj-scale parameter ----------------------------------------------
     if obj_scale:
         try:
             obj_scale = float(obj_scale)
             cmdargs.append("obj-scale:{}".format(str(obj_scale)))
-        except Exception, e:
-            raise ValueError("Could not convert supplied " + \
-                             "obj-scale to float! Ignoring this option..." + \
-                             " // " + e)
-    # handle stitch-width parameter --------------------------------------------
+        except Exception as e:
+            raise ValueError("Could not convert supplied " +
+                             "obj-scale to float! Ignoring this option..." +
+                             " // " + str(e))
+    # handle stitch-width parameter -------------------------------------------
     if stitch_width:
         try:
             stitch_width = float(stitch_width)
             cmdargs.append("stitch-width:{}".format(str(stitch_width)))
-        except Exception, e:
-            raise ValueError("Could not convert supplied stitch-width " + \
-                             "to float! Ignoring this option..." + \
-                             " // " + e)
-    # handle stitch-height parameter -------------------------------------------
+        except Exception as e:
+            raise ValueError("Could not convert supplied stitch-width " +
+                             "to float! Ignoring this option..." +
+                             " // " + str(e))
+    # handle stitch-height parameter ------------------------------------------
     if stitch_height:
         try:
             stitch_height = float(stitch_height)
             cmdargs.append("stitch-height:{}".format(str(stitch_height)))
-        except Exception, e:
-            raise ValueError("Could not convert supplied stitch-height " + \
-                             "to float! Ignoring this option..." + \
-                             " // " + e)
-    # handle save-traced parameter ---------------------------------------------
+        except Exception as e:
+            raise ValueError("Could not convert supplied stitch-height " +
+                             "to float! Ignoring this option..." +
+                             " // " + str(e))
+    # handle save-traced parameter --------------------------------------------
     if save_traced:
         try:
             save_traced = path.normpath(save_traced.rstrip("\n\r"))
             if not save_traced.endswith(".st"):
                 save_traced = save_traced + ".st"
             cmdargs.append("save-traced:{}".format(save_traced))
-        except Exception, e:
-            raise ValueError("Could not convert supplied save_traced " + \
-                             "path to string! Ignoring this option..." + \
-                             " // " + e)
-    # handle peel-step parameter -----------------------------------------------
+        except Exception as e:
+            raise ValueError("Could not convert supplied save_traced " +
+                             "path to string! Ignoring this option..." +
+                             " // " + str(e))
+    # handle peel-step parameter ----------------------------------------------
     if peel_step:
         try:
             peel_step = int(peel_step)
             if peel_step < -1:
                 peel_step = -1
             cmdargs.append("peel-step:{}".format(str(peel_step)))
-        except:
-            raise ValueError("Could not convert supplied peel-step " + \
-                             "to int! Ignoring this option..." + \
-                             " // " + e)
-    # make the command and return it
+        except Exception as e:
+            raise ValueError("Could not convert supplied peel-step " +
+                             "to int! Ignoring this option..." +
+                             " // " + str(e))
+
+    # check if path to interface.exe is set correctly
+    if not path.exists(_AK_PATH_) or not path.isfile(_AK_INTERFACE_ + ".exe"):
+        return None
+
+    # create the command and return it
     Command = [_AK_INTERFACE_]
     Command.extend(cmdargs)
     return Command
+
 
 def WriteTempFiles(model, obj_file, cons_file):
     """
@@ -129,6 +144,7 @@ def WriteTempFiles(model, obj_file, cons_file):
     SaveObj(obj_file, model.Mesh)
     SaveConstraints(cons_file, model.ConstraintCoordinates, model.Constraints)
 
-# MAIN -------------------------------------------------------------------------
+
+# MAIN ------------------------------------------------------------------------
 if __name__ == '__main__':
     pass
