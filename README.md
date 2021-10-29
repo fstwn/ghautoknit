@@ -52,14 +52,7 @@ to the folder where your ``interface.exe`` is located.
 
 - Move the whole `GHAutoknit` directory to the UserObjects folder.
 
-### 5. Unblock the new UserObjects!
-
-- Go into the `GHAutoknit` folder inside Grasshoppers UserObjects folder
-- Right click onto the first UserObject and go to **Properties**
-- If the text *This file came from another computer [...]* is displayed click on **Unblock**!
-- **Unfortunately you have to do this for _EVERY_ UserObject in the folder!**
-
-### 6. Restart Rhino & Grasshopper
+### 5. Restart Rhino & Grasshopper
 
 - If Rhino was running during the installation process, you'll have to restart it for the changes to take effect!
 
