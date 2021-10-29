@@ -1,11 +1,4 @@
-"""
-Static functions for loading and writing autoknit constraints from and to
-*.cons files aswell as reading and writing *.obj files.
-Author: Max Eschenbach
-Version: 200414
-"""
-
-# PYTHON STANDARD LIBRARY IMPORTS ----------------------------------------------
+# PYTHON STANDARD LIBRARY IMPORTS ---------------------------------------------
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -13,15 +6,15 @@ from collections import deque
 import itertools
 from os import path
 
-# LOCAL MODULE IMPORTS ---------------------------------------------------------
+# LOCAL MODULE IMPORTS --------------------------------------------------------
 from ghautoknit import Structs
 from ghautoknit.Constraint import Constraint
 
-# RHINO IMPORTS ----------------------------------------------------------------
+# RHINO IMPORTS ---------------------------------------------------------------
 from Rhino.Geometry import Mesh as RhinoMesh
 from Rhino.Geometry import Point3f as RhinoPoint3f
 
-# ALL LIST ---------------------------------------------------------------------
+# ALL LIST --------------------------------------------------------------------
 __all__ = [
     "LoadConstraints",
     "SaveConstraints",
@@ -30,9 +23,10 @@ __all__ = [
     "SaveObj"
 ]
 
-# READ AND WRITE FUNCTIONS (PRIVATE) -------------------------------------------
 
-# SCALARS ----------------------------------------------------------------------
+# READ AND WRITE FUNCTIONS (PRIVATE) ------------------------------------------
+
+# SCALARS ---------------------------------------------------------------------
 
 def _read_scalar(instream, name):
     """Reads a scalar from the stream and returns it as an integer."""
@@ -40,9 +34,10 @@ def _read_scalar(instream, name):
         s = instream.read(Structs.STRUCT_SCALAR.size)
         scalar = Structs.STRUCT_SCALAR.unpack(s)[0]
         return scalar
-    except Exception, e:
-        raise RuntimeError("Failed to read scalar " + \
+    except Exception as e:
+        raise RuntimeError("Failed to read scalar " +
                            "{} // {}".format(name, str(e)))
+
 
 def _write_scalar(outstream, scalar, name):
     """Writes a scalar to the output stream."""
@@ -50,11 +45,12 @@ def _write_scalar(outstream, scalar, name):
         s = Structs.STRUCT_SCALAR.pack(scalar)
         outstream.write(s)
         return True
-    except Exception, e:
-        raise RuntimeError("Failed to write scalar " + \
+    except Exception as e:
+        raise RuntimeError("Failed to write scalar " +
                            "{} // {}".format(name, e))
 
-# VECTORS ----------------------------------------------------------------------
+
+# VECTORS ---------------------------------------------------------------------
 
 def _read_vector(instream, structure, name):
     """Reads a vector from the instream and returns it as a tuple."""
@@ -62,9 +58,10 @@ def _read_vector(instream, structure, name):
         v = instream.read(structure.size)
         vector = structure.unpack(v)
         return vector
-    except Exception, e:
-        raise RuntimeError("Failed to read vector " + \
+    except Exception as e:
+        raise RuntimeError("Failed to read vector " +
                            "{} // {}".format(name, str(e)))
+
 
 def _write_vector(outstream, vector, structure, name):
     """Writes a vector to the output stream."""
@@ -72,23 +69,27 @@ def _write_vector(outstream, vector, structure, name):
         v = structure.pack(*vector)
         outstream.write(v)
         return True
-    except Exception, e:
-        raise RuntimeError("Failed to write vector " + \
+    except Exception as e:
+        raise RuntimeError("Failed to write vector " +
                            "{} // {}".format(name, e))
 
-# VECTOR SEQUENCES -------------------------------------------------------------
+
+# VECTOR SEQUENCES ------------------------------------------------------------
 
 def _read_vector_sequence(instream, structure, name):
-    """Reads a sequence of vectors from the stream using the given structure."""
+    """
+    Reads a sequence of vectors from the stream using the given structure.
+    """
     try:
         count = _read_scalar(instream, name + " count")
         vectors = [_read_vector(instream,
                                 structure,
                                 name + " {}".format(i)) for i in range(count)]
         return vectors
-    except Exception, e:
-        raise RuntimeError("Failed to read vector sequence " + \
+    except Exception as e:
+        raise RuntimeError("Failed to read vector sequence " +
                            "{} // {}".format(name, str(e)))
+
 
 def _write_vector_sequence(outstream, sequence, structure, name):
     """Writes a sequence of vectors to the stream using the given structure."""
@@ -98,39 +99,51 @@ def _write_vector_sequence(outstream, sequence, structure, name):
         for i, v in enumerate(sequence):
             _write_vector(outstream, v, structure, name + " {}".format(str(i)))
         return True
-    except Exception, e:
-        raise RuntimeError("Failed to write vector sequence " + \
+    except Exception as e:
+        raise RuntimeError("Failed to write vector sequence " +
                            "{} // {}".format(name, str(e)))
 
-# LOADING AND SAVING OF CONSTRAINTS (PUBLIC) -----------------------------------
+
+# LOADING AND SAVING OF CONSTRAINTS (PUBLIC) ----------------------------------
 
 def LoadConstraints(filepath):
     """Loads autoknit constraints from a binary *.cons file."""
     with open(filepath, "rb") as f:
         try:
-            vertices = _read_vector_sequence(f, Structs.STRUCT_VERTEX,
+            vertices = _read_vector_sequence(f,
+                                             Structs.STRUCT_VERTEX,
                                              "vertices")
-            constraints = _read_vector_sequence(f, Structs.STRUCT_STOREDCONSTRAINT,
-                                                "constraints")
+            constraints = _read_vector_sequence(
+                                            f,
+                                            Structs.STRUCT_STOREDCONSTRAINT,
+                                            "constraints")
             return True, vertices, constraints
-        except Exception, e:
+        except Exception as e:
             print(e)
             return False, e
+
 
 def SaveConstraints(filepath, vertices, constraints):
     """Saves constraints to a binary *.cons file compatible with autoknit."""
     try:
         with open(filepath, "wb") as f:
             vertices = list(itertools.chain.from_iterable(vertices))
-            _write_vector_sequence(f, vertices, Structs.STRUCT_VERTEX, "vertices")
+            _write_vector_sequence(f,
+                                   vertices,
+                                   Structs.STRUCT_VERTEX,
+                                   "vertices")
 
             constraints = [c.Storable for c in constraints]
-            _write_vector_sequence(f, constraints, Structs.STRUCT_STOREDCONSTRAINT, "constraints")
-    except Exception, e:
+            _write_vector_sequence(f,
+                                   constraints,
+                                   Structs.STRUCT_STOREDCONSTRAINT,
+                                   "constraints")
+    except Exception as e:
         print(e)
         raise RuntimeError("Could not write constraints file!")
 
-# INTERPRETATION OF SAVED CONSTRAINTS ------------------------------------------
+
+# INTERPRETATION OF SAVED CONSTRAINTS -----------------------------------------
 
 def InterpretStoredConstraints(points, storedconstraints):
     """Interprets the results of loading a *.cons file and builds
@@ -142,7 +155,8 @@ def InterpretStoredConstraints(points, storedconstraints):
         constraints.append(Constraint(i, vertices, c.Value, c.Radius))
     return constraints
 
-# LOADING AND SAVING OF MODELS (OBJ FILES) -------------------------------------
+
+# LOADING AND SAVING OF MODELS (OBJ FILES) ------------------------------------
 
 def LoadObj(filepath):
     """Reads from an *.obj file and returns a mesh"""
@@ -187,6 +201,7 @@ def LoadObj(filepath):
                     model.Faces.AddFace(va, vb, vc, vd)
     return model
 
+
 def SaveObj(filepath, mesh):
     """Saves a Rhino mesh as an *.obj file."""
     # run some checks on the input
@@ -209,7 +224,7 @@ def SaveObj(filepath, mesh):
     temp = deque()
     faces = deque()
     while len(fids) > 0:
-        #scriptcontext.escape_test()
+        # scriptcontext.escape_test()
         # if face is complete, check if it is a triangle, append and reset temp
         if temp and len(temp) == 4:
             if temp[-2] == temp[-1]:
@@ -223,7 +238,7 @@ def SaveObj(filepath, mesh):
         # handle trailing face at the end
         if len(temp) > 0:
             if len(temp) == 4 and temp[-2] == temp[-1]:
-                    temp.pop()
+                temp.pop()
             faces.append(("f" + (" {}" * len(temp)) + "\n").format(*temp))
             temp.clear()
 
@@ -238,6 +253,7 @@ def SaveObj(filepath, mesh):
         f.write("# Mesh Faces\n")
         f.writelines(faces)
 
-# MAIN -------------------------------------------------------------------------
+
+# MAIN ------------------------------------------------------------------------
 if __name__ == '__main__':
     pass
