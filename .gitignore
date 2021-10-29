@@ -2,6 +2,8 @@
 
 dist/
 
-/Examples/GHAutoknit_Development.gh
+GHDevelopment/
+
+/Examples/00_archive/
 
 /modules/ghautoknit/AKPATH.txt
