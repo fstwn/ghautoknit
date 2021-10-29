@@ -10,8 +10,8 @@ TODO: update docstring
         AKC: The constraints from the constraint file as Autoknit Constraint objects {list, SavedConstraint}
     Remarks:
         Author: Max Eschenbach
-        License: Apache License 2.0
-        Version: 200601
+        License: MIT License
+        Version: 211029
 """
 
 # PYTHON STANDARD LIBRARY IMPORTS

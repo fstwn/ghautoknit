@@ -8,8 +8,8 @@ and a time value.
         AKConstraint: The constraint as AKConstraint. {list, AKConstraint}
     Remarks:
         Author: Max Eschenbach
-        License: Apache License 2.0
-        Version: 200601
+        License: MIT License
+        Version: 211029
 """
 
 # PYTHON STANDARD LIBRARY IMPORTS
