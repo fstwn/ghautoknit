@@ -2,7 +2,7 @@
 
 A prototypical bridge between Rhino / Grasshopper and [Autoknit](https://github.com/textiles-lab/autoknit).
 
-**WARNING: This code is unfinished. I never completed it because I moved on to another approach!**
+**WARNING: This code is very rough! It has been verified to run under Windows, it has not been tested on Mac OSX!**
 
 ## However, it is actually possible to use this...
 
